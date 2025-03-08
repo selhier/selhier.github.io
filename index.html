@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <!-- Meta viewport para dispositivos móviles -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feliz Cumple</title>
   <link href="https://fonts.font.im/css?family=Sacramento" rel="stylesheet">
   <style>
@@ -48,7 +50,6 @@
       width: 100%;
       height: 100vh;
       z-index: -2;
-      /* Se omite fondo para no interferir con el skyblue */
       pointer-events: none;
     }
     .cloud {
@@ -81,67 +82,45 @@
     }
     /* Animaciones de nubes (más lentas para realismo) */
     .x1 {
-      -webkit-animation: moveclouds 90s linear infinite;
-      -moz-animation: moveclouds 90s linear infinite;
-      -o-animation: moveclouds 90s linear infinite;
+      animation: moveclouds 90s linear infinite;
     }
     .x2 {
       left: 200px;
       transform: scale(0.6);
-      -webkit-animation: moveclouds 80s linear infinite;
-      -moz-animation: moveclouds 80s linear infinite;
-      -o-animation: moveclouds 80s linear infinite;
+      animation: moveclouds 80s linear infinite;
     }
     .x3 {
       left: -250px;
       top: -200px;
       transform: scale(0.3);
       opacity: .8;
-      -webkit-animation: moveclouds 70s linear infinite;
-      -moz-animation: moveclouds 70s linear infinite;
-      -o-animation: moveclouds 70s linear infinite;
+      animation: moveclouds 70s linear infinite;
     }
     .x4 {
       left: 300px;
       transform: scale(0.8);
-      -webkit-animation: moveclouds 96s linear infinite;
-      -moz-animation: moveclouds 96s linear infinite;
-      -o-animation: moveclouds 96s linear infinite;
+      animation: moveclouds 96s linear infinite;
     }
     .x5 {
       left: -200px;
       transform: scale(0.6);
-      -webkit-animation: moveclouds 70s linear infinite;
-      -moz-animation: moveclouds 70s linear infinite;
-      -o-animation: moveclouds 70s linear infinite;
+      animation: moveclouds 70s linear infinite;
     }
     .x6 {
       left: 470px;
       top: -200px;
       transform: scale(0.2);
       opacity: 0.7;
-      -webkit-animation: moveclouds 62s linear infinite;
-      -moz-animation: moveclouds 62s linear infinite;
-      -o-animation: moveclouds 62s linear infinite;
+      animation: moveclouds 62s linear infinite;
     }
     .x7 {
       left: 20px;
       top: -400px;
       transform: scale(0.2);
       opacity: .7;
-      -webkit-animation: moveclouds 60s linear infinite;
-      -moz-animation: moveclouds 60s linear infinite;
-      -o-animation: moveclouds 60s linear infinite;
+      animation: moveclouds 60s linear infinite;
     }
-    @-webkit-keyframes moveclouds {
-      0% {margin-left: 1000px;}
-      100% {margin-left: -1000px;}
-    }
-    @-moz-keyframes moveclouds {
-      0% {margin-left: 1000px;}
-      100% {margin-left: -1000px;}
-    }
-    @-o-keyframes moveclouds {
+    @keyframes moveclouds {
       0% {margin-left: 1000px;}
       100% {margin-left: -1000px;}
     }
@@ -179,6 +158,8 @@
       height: 150px;
       position: absolute;
       opacity: 1;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
     }
     .leftwings, .rightwings {
       position: absolute;
@@ -273,6 +254,15 @@
     .color18 .upperwing, .color18 .lowerwing { background: radial-gradient(ellipse at center, hsl(306,80%,50%) 0%, hsl(306,80%,70%) 50%, hsl(306,80%,50%) 100%); }
     .color19 .upperwing, .color19 .lowerwing { background: radial-gradient(ellipse at center, hsl(324,80%,50%) 0%, hsl(324,80%,70%) 50%, hsl(324,80%,50%) 100%); }
     .color20 .upperwing, .color20 .lowerwing { background: radial-gradient(ellipse at center, hsl(342,80%,50%) 0%, hsl(342,80%,70%) 50%, hsl(342,80%,50%) 100%); }
+
+    /* Estilos para fade-out solo en mariposas creadas con click */
+    .butterfly_wrapper.click-butterfly {
+      transition: opacity 2s ease-out;
+    }
+    .butterfly_wrapper.fade-out {
+      opacity: 0;
+    }
+
     /* ---------------------------
        CSS para las rosas
     --------------------------- */
@@ -375,6 +365,27 @@
       50% { transform: rotate(-20deg); }
       100% { transform: rotate(0deg); }
     }
+
+    /* ---------------------------
+       Media Queries para dispositivos móviles
+    --------------------------- */
+    @media (max-width: 600px) {
+      #message {
+        font-size: 32px;
+      }
+      .ball {
+        width: 100px;
+        height: 100px;
+      }
+      .butterfly_wrapper {
+        width: 100px;
+        height: 100px;
+      }
+      .rose {
+        width: 150px;
+        height: 150px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -422,7 +433,6 @@
       function createBlade() {
         var x = 0;
         var speed = Math.random() * 0.5;
-        // Hierba más corta: rango de h/12 a h/6
         var maxTall = Math.random() * (h/12) + (h/12);
         var maxSize = Math.random() * (h/100) + 3;
         var position = Math.random() * w - w/2;
@@ -532,6 +542,12 @@
       var butterflyDiv = document.createElement("div");
       var colorIndex = generaterandomno(1, 20);
       butterflyDiv.className = "butterfly_wrapper color" + colorIndex;
+      
+      // Si se pasan coordenadas, se considera que la mariposa fue creada por click o toque
+      if (x !== undefined && y !== undefined) {
+        butterflyDiv.classList.add("click-butterfly");
+      }
+      
       butterflyDiv.innerHTML =
         '<div class="leftwings">' +
           '<div class="perspective"><div class="upperwing upperwing_left"></div></div>' +
@@ -541,36 +557,64 @@
           '<div class="perspective"><div class="upperwing upperwing_right"></div></div>' +
           '<div class="perspective"><div class="lowerwing lowerwing_right"></div></div>' +
         '</div>';
-      document.getElementById("butterflyContainer").appendChild(butterflyDiv);
+      container.appendChild(butterflyDiv);
       var b = new Butterfly(butterflyDiv, x, y);
       b.flutter(1500);
+      
+      // Si la mariposa se creó con click o toque, programamos el fade out y eliminación
+      if (x !== undefined && y !== undefined) {
+        setTimeout(function() {
+          butterflyDiv.classList.add("fade-out");
+          setTimeout(function() {
+            if(butterflyDiv.parentNode) {
+              butterflyDiv.parentNode.removeChild(butterflyDiv);
+            }
+          }, 2000); // tiempo para completar el fade out
+        }, 5000); // tiempo en pantalla antes de iniciar el fade out
+      }
     }
     
-    // Crear 20 mariposas iniciales
+    // Crear 20 mariposas iniciales (no desaparecerán)
     for (var i = 1; i <= 20; i++) {
       createButterfly();
     }
     
-    // Al hacer click se crean 5 mariposas en la posición del cursor
+    // Al hacer click se crean 5 mariposas en la posición del cursor (con fade out)
     document.addEventListener("click", function(e) {
       for (var i = 0; i < 5; i++) {
         createButterfly(e.pageX, e.pageY);
       }
     });
     
+    // Soporte para dispositivos táctiles
+    document.addEventListener("touchstart", function(e) {
+      var touch = e.touches[0];
+      for (var i = 0; i < 5; i++) {
+        createButterfly(touch.pageX, touch.pageY);
+      }
+    });
+    
     /* ==============================
        Rosas que crecen desde el suelo
-       MODIFICADO: se fijan al fondo, se aumenta el número y se añade variedad (rotación y escala)
+       Se reduce el número y se distribuyen uniformemente en móviles
     ============================== */
     (function() {
       var container = document.getElementById('rosesContainer');
       var containerWidth = container.clientWidth;
-      var numRoses = 20;
+      // Si el ancho de la ventana es menor a 600px, usamos menos rosas
+      var numRoses = window.innerWidth < 600 ? 10 : 20;
       for (var i = 0; i < numRoses; i++) {
         var roseDiv = document.createElement('div');
         roseDiv.className = 'rose';
-        // Posicionar la rosa: posición horizontal aleatoria y fijada al fondo
-        var posX = Math.random() * (containerWidth - 200);
+        // Posicionar la rosa:
+        // En móviles se distribuyen uniformemente, en desktop se usa posición aleatoria
+        var posX;
+        if (window.innerWidth < 600) {
+          // Dividir el ancho del contenedor en 'numRoses' partes y centrar cada rosa
+          posX = (i + 0.5) * (containerWidth / numRoses) - (150 / 2);
+        } else {
+          posX = Math.random() * (containerWidth - 200);
+        }
         roseDiv.style.left = posX + 'px';
         roseDiv.style.bottom = "0px";
         
